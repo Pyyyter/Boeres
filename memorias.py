@@ -1,6 +1,7 @@
 class Quadro :
-    def __init__(self):
+    def __init__(self, i):
         self.pagina = None
+        self.numero = i
     def liberarQuadro(self):
         self.pagina = None
 
@@ -9,18 +10,17 @@ class MemoriaPrincipal :
         self.tamanhoDoQuadro = tamanhoDoQuadro
         self.tamanhoDaMemoriaPrincipal = tamanhoDaMemoriaPrincipal
         self.quadros = []
-        for i in range(tamanhoDaMemoriaPrincipal / tamanhoDoQuadro):
-            self.quadros.append(Quadro())
+        for i in range(int(tamanhoDaMemoriaPrincipal / tamanhoDoQuadro)):
+            self.quadros.append(Quadro(i))
 
-    def mostrar_memoria_principal(self):
+    def mostrarMemoriaPrincipal(self):
         i = 0
         for quadro in self.quadros:
-            if quadro == None:
+            if quadro.pagina == None:
                 print(i, " : FREE")
             else:
-                print(i," : ", quadro.pagina.processo.nomeDoProcesso)
+                print(i," : ", quadro.pagina.processoAssociado.nomeDoProcesso)
             i+= 1
-
 
 class MemoriaSecundaria :
     def __init__(self, tamanhoDaMemoria):
@@ -34,5 +34,7 @@ class MemoriaSecundaria :
                 print(i, " : FREE")
             else:
                 print(i, " : ", processo.nomeDoProcesso)
+
+
 
                 

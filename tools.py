@@ -1,14 +1,20 @@
 from pagina import Pagina
 
+# from manager import executarInstrucao 
+import math
 def quantidadeDePaginas(tamanhoDoProcesso, tamanhoDoQuadro):
-    return (tamanhoDoProcesso / tamanhoDoQuadro)
+    return (int(tamanhoDoProcesso) / int(tamanhoDoQuadro))
 
-def atualizarLRU(memoriaPrincipal):
+def removeN(variavel):
+    for letra in variavel:
+        if (letra == "\\") or (letra=="n"):
+            variavel.pop(letra)
+
+def atualizarLRU(gerenciador):
     for processo in gerenciador.tabelaDeProcessos:
         processo.contadorLRU += 1
 
 def removerProcessoDaMemoriaPrincipalLRU(gerenciador):
-    #verificar o processo com maior contadorLRU
     processo = gerenciador.tabelaDeProcessos[0]
     for processo in gerenciador.tabelaDeProcessos:
         if processo.contadorLRU > processo.contadorLRU:
@@ -28,25 +34,29 @@ def instrucaoDeIO(entrada):
     dispositivoID = int(entrada[3])
     tempo = int(entrada[4])
 
-def lerEntrada(entrada, gerenciador):
+def lerEntrada(entrada, manager):
     entrada = entrada.split(" ")
+    entrada[-1] = entrada[-1].replace("\n", "")
     match entrada[1]:
         case "C":
-            criarProcesso(entrada)
+            manager.criarProcesso(entrada)
         case "I":  
             instrucaoDeIO(entrada)
         case "P":
             executarInstrucao(entrada)
         case "W":  
-            escrita(entrada)
+            print(entrada)
+            manager.realizarEscrita(entrada[0], entrada[2], entrada[3])
         case "R":
-            leitura(entrada)
+            manager.realizarLeitura(entrada[0], entrada[2])
         case "T":
-            terminacao(entrada)
+            manager.terminacao(entrada)
+        case "S":
+            manager.memoriaPrincipal.mostrarMemoriaPrincipal()
         case _:
             print("Entrada inválida")
             return
-    gerenciador.atualizarLRU()
+    atualizarLRU(manager)
 
 
 
@@ -56,18 +66,32 @@ def processoCabeNaMemoriaPrincipal(processo, memoriaPrincipal):
         if quadro.pagina == None:
             quadrosLivres += 1
 
-    if processo.quantidadeDePaginas >= quadrosLivres:
+    if processo.quantidadeDePaginas <= quadrosLivres:
         return True
     else:
         return False
 
-def colocarProcessoNaMemoriaPrincipal(self, quadros, processo):
-    cabe = processoCabeNaMemoriaPrincipal(processo, self.memoriaPrincipal)
-    if cabe :
+def colocarProcessoNaMemoriaPrincipal(manager, processo):
+    numeroDePaginas = math.ceil(processo.quantidadeDePaginas)
+    cabe = processoCabeNaMemoriaPrincipal(processo, manager.memoriaPrincipal)
+    enderecoLogico = 10
+    #CONSERTAR
+    if cabe  :
         numeroDaPagina = 0
-        for quadro in quadros:
-            if quadro.pagina == None:
-                quadro.pagina = Pagina(enderecoLogico, processo, numeroDaPagina, 1, 0)
+        for quadro in manager.memoriaPrincipal.quadros:
+            if quadro.pagina == None and numeroDePaginas > 0:
+                quadro.pagina = Pagina(enderecoLogico, processo, numeroDaPagina, 1, 0 , quadro.numero)
                 numeroDaPagina += 1
+                numeroDePaginas -=1
+        processo.estado = "PRONTO"
     else:
-        self.swapper.colocarProcessoNaMemoriaPrincipal(self.memoriaPrincipal, processo)
+        print("MP")
+        print(manager.memoriaPrincipal)
+        print("MP")
+        manager.swapper.colocarProcessoNaMemoriaPrincipalSwapper(manager.memoriaPrincipal, processo)
+
+def lerArquivo(path, manager):
+    arquivo = open(path, 'r')
+    for linha in arquivo :
+        lerEntrada(linha, manager)
+        

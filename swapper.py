@@ -10,6 +10,7 @@ class Swapper :
         while not cabe:
             removerProcessoDaMemoriaPrincipalLRU(memoriaPrincipal, processo)
             cabe = processoCabeNaMemoriaPrincipal(memoriaPrincipal, processo)
+        processo.estado = "Pronto"
         colocarProcessoNaMemoriaPrincipal(memoriaPrincipal, processo)
 
     def colocarProcessoNaMemoriaSecundaria():
