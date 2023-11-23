@@ -22,9 +22,11 @@ def seleciona():
 def inicio(manager):
     resposta = seleciona()
     if(resposta == 1):
-        manager.memoriaPrincipal.mostrarMemoriaPrincipal()
+      manager.memoriaPrincipal.mostrarMemoriaPrincipal()
+      print("------------------------------------------")
+      manager.memoriaPrincipal.mostrarMemoriaSecundaria()
     if(resposta == 2):
-       manager.memoriaPrincipal.mostrarMemoriaSecundaria()
+       manager.memoriaPrincipal.mostrarTabelasDePaginas()
     if(resposta == 3):
        manager.mostrarProcessos()
     if(resposta == 4):

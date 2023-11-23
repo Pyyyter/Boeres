@@ -1,5 +1,4 @@
 from pagina import Pagina
-# from manager import executarInstrucao 
 import math
 from random import randint
 
@@ -16,13 +15,12 @@ def atualizarLRU(gerenciador):
         processo.contadorLRU += 1
 
 def removerProcessoDaMemoriaPrincipalLRU(gerenciador):
-    processo = gerenciador.tabelaDeProcessos[0]
+    p1 = gerenciador.tabelaDeProcessos[0]
     for processo in gerenciador.tabelaDeProcessos:
-        if processo.contadorLRU > processo.contadorLRU:
-            processo = processo
+        if processo.contadorLRU > p1.contadorLRU:
+            p1 = processo
 
-    #remover o processo da memoria principal
-    removerProcessoDaMemoriaPrincipal(gerenciador, processo)
+    gerenciador.swapper.removerProcessoDaMemoriaPrincipal(p1)
 
 def instrucaoDeIO(entrada):
     # Parse the input
@@ -32,6 +30,9 @@ def instrucaoDeIO(entrada):
     tempo = int(entrada[4])
 
 def lerEntrada(entrada, manager):
+    atualizarLRU(manager)
+    for processo in manager.tabelaDeProcessos:
+        print("Processo : ", processo.nomeDoProcesso, " / ", "LRU : ", processo.contadorLRU)
     entrada = entrada.split(" ")
     entrada[-1] = entrada[-1].replace("\n", "")
     match entrada[1]:
@@ -64,10 +65,8 @@ def processoCabeNaMemoriaPrincipal(memoriaPrincipal, processo):
         if quadro.pagina == None:
             quadrosLivres += 1
     if processo.quantidadeDePaginas <= quadrosLivres:
-        print("Cabe")
         return True
     else:
-        print("Não cabe")
         return False
 
 def colocarProcessoNaMemoriaPrincipal(manager, processo):
@@ -89,24 +88,3 @@ def lerArquivo(path, manager):
     for linha in arquivo :
         lerEntrada(linha, manager)
 
-def removerProcessoDaMemoriaPrincipal(manager, processo):
-    manager.memoriaSecundaria.processosSuspensos.append(processo)
-    for quadro in manager.memoriaPrincipal.quadros:
-        if quadro.pagina:
-            print(quadro.pagina.processoAssociado.nomeDoProcesso)
-            print("Processo : ",processo.nomeDoProcesso)
-            if quadro.pagina.processoAssociado.nomeDoProcesso == processo.nomeDoProcesso:
-                print("liberou")
-                quadro.liberarQuadro()
-
-def colocarProcessoNaMemoriaSecundaria(memoriaSecundaria, processo):
-    memoriaUsada = 0
-    for processoSuspenso in memoriaSecundaria.processosSuspensos:
-        memoriaUsada += processoSuspenso.tamanhoDoProcesso
-    
-    if(memoriaUsada + processo.tamanhoDoProcesso <= memoriaSecundaria.tamanhoDaMemoria):
-        memoriaSecundaria.processoSuspensos.append(processo)
-    else:
-        aleatorio = randint(0, len(memoriaSecundaria.processosSuspensos))
-        memoriaSecundaria.processosSuspensos.pop(aleatorio)
-        colocarProcessoNaMemoriaPrincipal(memoriaSecundaria, processo)

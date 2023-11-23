@@ -57,22 +57,21 @@ class GerenciadorDeMemoria :
         enderecoFisico = int(enderecoFisico)
 
     def removerProcessoDaTabela(self, processo):
-        for p in self.tabelaDeProcessos:
-            if p == processo:
-                self.tabelaDeProcessos.remove(p)
+        for i in range(len(self.tabelaDeProcessos) - 1):
+            if self.tabelaDeProcessos[i].nomeDoProcesso == processo:
+                self.tabelaDeProcessos.pop(i)
 
-    def terminacao(self, processo):
+    def terminacao(self, nomeDoProcesso):
         for quadro in self.memoriaPrincipal.quadros:
-            if quadro.pagina and quadro.pagina.processoAssociado.nomeDoProcesso == processo:
+            if quadro.pagina and quadro.pagina.processoAssociado.nomeDoProcesso == nomeDoProcesso:
                 quadro.liberarQuadro()
 
         for p in self.memoriaSecundaria.processosSuspensos:
-            if p == processo:
+            if p.nomeDoProcesso == nomeDoProcesso:
                 self.memoriaSecundaria.processosSuspensos.remove(p)
 
-        for p in self.tabelaDeProcessos:
-            if p == processo:
-                self.memoriaSecundaria.processosSuspensos.remove(p)
+        self.removerProcessoDaTabela(nomeDoProcesso)
+                
 
     def realizarLeitura(processo, endereco):
         numero_pagina = endereco[:5]
@@ -103,13 +102,5 @@ class GerenciadorDeMemoria :
         else:
             print(f"Falha na escrita: Endereço {endereco} fora do espaço de endereçamento do processo.")
         
-    def mostrarTabelasDePaginas(quadros):
-        for quadro in quadros:
-            if(quadro.pagina != None):
-                print("Número da pagina: ", quadro.pagina.numeroDaPagina)
-                print("Entrada: ")
-                print("Número do quadro: ", quadro.pagina.entrada.numeroDoQuadro)
-                print("B: ", quadro.pagina.bitDePresenca)
-                print("M: ", quadro.pagina.bitDeModificacao)
 
     

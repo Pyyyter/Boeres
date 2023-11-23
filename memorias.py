@@ -21,6 +21,15 @@ class MemoriaPrincipal :
             else:
                 print(i," : ", quadro.pagina.processoAssociado.nomeDoProcesso)
             i+= 1
+    
+    def mostrarTabelasDePaginas(self):
+        for quadro in self.quadros:
+            if(quadro.pagina != None):
+                print("Número da pagina: ", quadro.pagina.numeroDaPagina)
+                print("Entrada: ")
+                print("Número do quadro: ", quadro.pagina.entrada.numeroDoQuadro)
+                print("B: ", quadro.pagina.bitDePresenca)
+                print("M: ", quadro.pagina.bitDeModificacao)
 
 class MemoriaSecundaria :
     def __init__(self, tamanhoDaMemoria):
