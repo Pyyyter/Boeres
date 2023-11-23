@@ -6,7 +6,7 @@ class Entrada :
         self.bitDeModificacao = bitDeModificacao
 
 class Pagina :
-    def __init__(self, enderecoLogico, processoAssociado, numeroDaPagina, bitDePresenca, bitDeModificacao, numeroDoQuadro):
-        self.enderecoLogico = enderecoLogico
+    def __init__(self, processoAssociado, numeroDaPagina, bitDePresenca, bitDeModificacao, numeroDoQuadro):
+        self.enderecoLogico = 0
         self.processoAssociado = processoAssociado
         self.entrada = Entrada(numeroDaPagina, bitDePresenca, bitDeModificacao, numeroDoQuadro)

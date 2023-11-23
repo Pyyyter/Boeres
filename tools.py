@@ -1,7 +1,8 @@
 from pagina import Pagina
-
 # from manager import executarInstrucao 
 import math
+from random import randint
+
 def quantidadeDePaginas(tamanhoDoProcesso, tamanhoDoQuadro):
     return (int(tamanhoDoProcesso) / int(tamanhoDoQuadro))
 
@@ -21,11 +22,7 @@ def removerProcessoDaMemoriaPrincipalLRU(gerenciador):
             processo = processo
 
     #remover o processo da memoria principal
-    gerenciador.tabelaDeProcessos.processos.pop(processo)
-    for quadro in gerenciador.memoriaPrincipal.quadros:
-        if quadro.pagina.processoAssociado == processo:
-            quadro.liberarQuadro()
-    gerenciador.memoriaSecundaria.processosSuspensos.append(processo)
+    removerProcessoDaMemoriaPrincipal(gerenciador, processo)
 
 def instrucaoDeIO(entrada):
     # Parse the input
@@ -50,7 +47,7 @@ def lerEntrada(entrada, manager):
         case "R":
             manager.realizarLeitura(entrada[0], entrada[2])
         case "T":
-            manager.terminacao(entrada)
+            manager.terminacao(entrada[0])
         case "S":
             manager.memoriaPrincipal.mostrarMemoriaPrincipal()
         case _:
@@ -60,38 +57,56 @@ def lerEntrada(entrada, manager):
 
 
 
-def processoCabeNaMemoriaPrincipal(processo, memoriaPrincipal):
+def processoCabeNaMemoriaPrincipal(memoriaPrincipal, processo):
     quadrosLivres = 0
+
     for quadro in memoriaPrincipal.quadros:
         if quadro.pagina == None:
             quadrosLivres += 1
-
     if processo.quantidadeDePaginas <= quadrosLivres:
+        print("Cabe")
         return True
     else:
+        print("Não cabe")
         return False
 
 def colocarProcessoNaMemoriaPrincipal(manager, processo):
     numeroDePaginas = math.ceil(processo.quantidadeDePaginas)
-    cabe = processoCabeNaMemoriaPrincipal(processo, manager.memoriaPrincipal)
-    enderecoLogico = 10
-    #CONSERTAR
-    if cabe  :
+    cabe = processoCabeNaMemoriaPrincipal(manager.memoriaPrincipal,processo)
+    if cabe:
         numeroDaPagina = 0
         for quadro in manager.memoriaPrincipal.quadros:
             if quadro.pagina == None and numeroDePaginas > 0:
-                quadro.pagina = Pagina(enderecoLogico, processo, numeroDaPagina, 1, 0 , quadro.numero)
+                quadro.pagina = Pagina(processo, numeroDaPagina, 1, 0 , quadro.numero)
                 numeroDaPagina += 1
                 numeroDePaginas -=1
         processo.estado = "PRONTO"
     else:
-        print("MP")
-        print(manager.memoriaPrincipal)
-        print("MP")
-        manager.swapper.colocarProcessoNaMemoriaPrincipalSwapper(manager.memoriaPrincipal, processo)
+        manager.swapper.colocarProcessoNaMemoriaPrincipalSwapper(processo)
 
 def lerArquivo(path, manager):
     arquivo = open(path, 'r')
     for linha in arquivo :
         lerEntrada(linha, manager)
-        
+
+def removerProcessoDaMemoriaPrincipal(manager, processo):
+    manager.memoriaSecundaria.processosSuspensos.append(processo)
+    for quadro in manager.memoriaPrincipal.quadros:
+        if quadro.pagina:
+            print(quadro.pagina.processoAssociado.nomeDoProcesso)
+            print("Processo : ",processo.nomeDoProcesso)
+            if quadro.pagina.processoAssociado.nomeDoProcesso == processo.nomeDoProcesso:
+                print("liberou")
+                quadro.liberarQuadro()
+
+def colocarProcessoNaMemoriaSecundaria(memoriaSecundaria, processo):
+    memoriaUsada = 0
+    for processoSuspenso in memoriaSecundaria.processosSuspensos:
+        memoriaUsada += processoSuspenso.tamanhoDoProcesso
+    
+    if(memoriaUsada + processo.tamanhoDoProcesso <= memoriaSecundaria.tamanhoDaMemoria):
+        memoriaSecundaria.processoSuspensos.append(processo)
+    else:
+        aleatorio = randint(0, len(memoriaSecundaria.processosSuspensos))
+        memoriaSecundaria.processosSuspensos.pop(aleatorio)
+        colocarProcessoNaMemoriaPrincipal(memoriaSecundaria, processo)

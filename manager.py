@@ -19,7 +19,7 @@ class GerenciadorDeMemoria :
         self.numeroDeQuadros = tamanhoDaMemoriaPrincipal / tamanhoDoQuadro
         self.memoriaPrincipal = MemoriaPrincipal(tamanhoDoQuadro, tamanhoDaMemoriaPrincipal)
         self.memoriaSecundaria = MemoriaSecundaria(tamanhoDaMemoriaSecundaria)
-        self.swapper = Swapper()
+        self.swapper = Swapper(self)
         self.filaDoPronto = []
 
     #Entrada é uma linha do arquivo de entrada/input
@@ -63,7 +63,7 @@ class GerenciadorDeMemoria :
 
     def terminacao(self, processo):
         for quadro in self.memoriaPrincipal.quadros:
-            if quadro.pagina and quadro.pagina.processo == processo:
+            if quadro.pagina and quadro.pagina.processoAssociado.nomeDoProcesso == processo:
                 quadro.liberarQuadro()
 
         for p in self.memoriaSecundaria.processosSuspensos:
@@ -72,7 +72,7 @@ class GerenciadorDeMemoria :
 
         for p in self.tabelaDeProcessos:
             if p == processo:
-                self.processosSuspensos.remove(p)
+                self.memoriaSecundaria.processosSuspensos.remove(p)
 
     def realizarLeitura(processo, endereco):
         numero_pagina = endereco[:5]
@@ -103,3 +103,13 @@ class GerenciadorDeMemoria :
         else:
             print(f"Falha na escrita: Endereço {endereco} fora do espaço de endereçamento do processo.")
         
+    def mostrarTabelasDePaginas(quadros):
+        for quadro in quadros:
+            if(quadro.pagina != None):
+                print("Número da pagina: ", quadro.pagina.numeroDaPagina)
+                print("Entrada: ")
+                print("Número do quadro: ", quadro.pagina.entrada.numeroDoQuadro)
+                print("B: ", quadro.pagina.bitDePresenca)
+                print("M: ", quadro.pagina.bitDeModificacao)
+
+    
