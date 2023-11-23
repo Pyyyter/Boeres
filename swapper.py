@@ -1,13 +1,16 @@
-from tools import removerProcessoDaMemoriaPrincipal
-
+from tools import processoCabeNaMemoriaPrincipal
+from tools import removerProcessoDaMemoriaPrincipalLRU
+from tools import colocarProcessoNaMemoriaPrincipal
 class Swapper :
-    def colocarProcessoNaMemoriaPrincipal():
-        # verificar se na memoria tem espaco pro processo
-        # se tiver, colocar o processo na memoria
-        # se nao tiver, chamar o removerprocesso
-        # faça isso ate caber
-        # coloque o processo na memoria
-        pass
+    
+    def colocarProcessoNaMemoriaPrincipalSwapper(memoriaPrincipal, processo):
+        cabe = processoCabeNaMemoriaPrincipal(memoriaPrincipal, processo)
+        if cabe:
+            colocarProcessoNaMemoriaPrincipal(memoriaPrincipal, processo)
+        while not cabe:
+            removerProcessoDaMemoriaPrincipalLRU(memoriaPrincipal, processo)
+            cabe = processoCabeNaMemoriaPrincipal(memoriaPrincipal, processo)
+        colocarProcessoNaMemoriaPrincipal(memoriaPrincipal, processo)
 
     def colocarProcessoNaMemoriaSecundaria():
         # verificar se na memoria tem espaco pro processo
@@ -16,3 +19,4 @@ class Swapper :
         # faça isso ate caber
         # coloque o processo na memoria
         pass
+

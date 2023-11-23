@@ -1,16 +1,25 @@
+from pagina import Pagina
+
 def quantidadeDePaginas(tamanhoDoProcesso, tamanhoDoQuadro):
     return (tamanhoDoProcesso / tamanhoDoQuadro)
 
-def atualizarLRU(gerenciador):
+def atualizarLRU(memoriaPrincipal):
     for processo in gerenciador.tabelaDeProcessos:
         processo.contadorLRU += 1
 
-def removerProcessoDaMemoriaPrincipal(self, processo1):
-    self.tabelaDeProcessos.processos.pop(processo1)
-    for quadro in self.memoriaPrincipal.quadros:
-        if quadro.pagina.processoAssociado == processo1:
+def removerProcessoDaMemoriaPrincipalLRU(gerenciador):
+    #verificar o processo com maior contadorLRU
+    processo = gerenciador.tabelaDeProcessos[0]
+    for processo in gerenciador.tabelaDeProcessos:
+        if processo.contadorLRU > processo.contadorLRU:
+            processo = processo
+
+    #remover o processo da memoria principal
+    gerenciador.tabelaDeProcessos.processos.pop(processo)
+    for quadro in gerenciador.memoriaPrincipal.quadros:
+        if quadro.pagina.processoAssociado == processo:
             quadro.liberarQuadro()
-    self.memoriaSecundaria.processosSuspensos.append(processo1)
+    gerenciador.memoriaSecundaria.processosSuspensos.append(processo)
 
 def instrucaoDeIO(entrada):
     # Parse the input
@@ -38,3 +47,27 @@ def lerEntrada(entrada, gerenciador):
             print("Entrada inválida")
             return
     gerenciador.atualizarLRU()
+
+
+
+def processoCabeNaMemoriaPrincipal(processo, memoriaPrincipal):
+    quadrosLivres = 0
+    for quadro in memoriaPrincipal.quadros:
+        if quadro.pagina == None:
+            quadrosLivres += 1
+
+    if processo.quantidadeDePaginas >= quadrosLivres:
+        return True
+    else:
+        return False
+
+def colocarProcessoNaMemoriaPrincipal(self, quadros, processo):
+    cabe = processoCabeNaMemoriaPrincipal(processo, self.memoriaPrincipal)
+    if cabe :
+        numeroDaPagina = 0
+        for quadro in quadros:
+            if quadro.pagina == None:
+                quadro.pagina = Pagina(enderecoLogico, processo, numeroDaPagina, 1, 0)
+                numeroDaPagina += 1
+    else:
+        self.swapper.colocarProcessoNaMemoriaPrincipal(self.memoriaPrincipal, processo)

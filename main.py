@@ -14,3 +14,6 @@ def seleciona():
 arquivo = open("entrada.txt", "r")
 for linha in arquivo:
     lerEntrada(linha)
+
+def inicio():
+    print("1 - ")

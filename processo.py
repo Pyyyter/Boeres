@@ -1,7 +1,8 @@
 from tools import quantidadeDePaginas
 
 class Processo :
-    def __init__(self, valorDoProcesso, nomeDoProcesso, tamanhoDoProcesso, tamanhoDoQuadro):
+    def __init__(self, valorDoProcesso, nomeDoProcesso, tamanhoDoProcesso, tamanhoDoQuadro, estado):
+        self.estado = estado
         self.valorDoProcesso = valorDoProcesso
         self.nomeDoProcesso = nomeDoProcesso
         self.tamanhoDoProcesso = tamanhoDoProcesso

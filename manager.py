@@ -4,6 +4,9 @@ from pagina import Pagina
 from swapper import Swapper
 from tools import quantidadeDePaginas
 from tools import atualizarLRU
+from processo import Processo
+from tools import processoCabeNaMemoriaPrincipal
+from tools import colocarProcessoNaMemoriaPrincipal
 
 class GerenciadorDeMemoria :
 
@@ -17,35 +20,18 @@ class GerenciadorDeMemoria :
         self.memoriaPrincipal = MemoriaPrincipal(tamanhoDoQuadro, tamanhoDaMemoriaPrincipal)
         self.memoriaSecundaria = MemoriaSecundaria(tamanhoDaMemoriaSecundaria)
         self.swapper = Swapper(self.memoriaPrincipal, self.memoriaSecundaria, self.tabelaDeProcessos)
+        self.filaDoPronto = []
 
     #Entrada é uma linha do arquivo de entrada/input
     def criarProcesso(self, entrada):
         entrada = entrada.split(" ")
         tamanhoDoProcesso = int(entrada[2])
         novoProcesso = Processo(entrada[0],tamanhoDoProcesso, self.tamanhoDaMemoriaPrincipal, self.tamanhoDoQuadro)
-        self.tabelaDeProcessos.append(novoProcesso)        
-    
+        self.tabelaDeProcessos.append(novoProcesso)
+        self.filaDoPronto.append(novoProcesso)
+        #colocarProcessoNaMemoriaPrincipal(self.memoriaPrincipal.quadros, novoProcesso)
 
-    def colocarProcessoNaMemoria(self, quadros, processo):
-        livres = 0
-
+    def mostrar_processos(self):
         for processo in self.tabelaDeProcessos:
-            if processo != processo:
-                processo.contadorLRU += 1
-            
-        for quadro in quadros:
-            if quadro.pagina == None:
-                livres += 1
-
-        if livres >= processo.quantidadeDePaginas:
-            numPagina = 0
-            for quadro in quadros:
-                if quadro.pagina == None:
-                    quadro.pagina = Pagina(processo, numPagina, 1, 0) # Consertar o numero da pagina
-                    processo.quantidadeDePaginas -= 1
-                    numPagina += 1
-                    return quadro
-        else:
-            self.swapper.substituirProcesso(quadros, processo)
-            self.colocarProcessoNaMemoria(quadros, processo)
-    
+            if processo != None:
+                print(processo.nomeDoProcesso, processo.estado)
