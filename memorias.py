@@ -36,14 +36,10 @@ class MemoriaSecundaria :
         self.tamanhoDaMemoria = tamanhoDaMemoria
         self.processosSuspensos = []
 
-    def mostrar_memoria_secundaria(self):
-        i=0
+    def mostrarMemoriaSecundaria(self):
+        memoriaLivre = int(self.tamanhoDaMemoria)
+        print("Processos suspensos : ")
         for processo in self.processosSuspensos:
-            if processo == None:
-                print(i, " : FREE")
-            else:
-                print(i, " : ", processo.nomeDoProcesso)
-
-
-
-                
+            print(processo.nomeDoProcesso)
+            memoriaLivre -= int(processo.tamanhoDoProcesso)
+        print("Memória livre : ", memoriaLivre)

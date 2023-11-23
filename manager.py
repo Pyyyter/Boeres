@@ -7,6 +7,7 @@ from tools import atualizarLRU
 from processo import Processo
 from tools import processoCabeNaMemoriaPrincipal
 from tools import colocarProcessoNaMemoriaPrincipal
+import math
 
 class GerenciadorDeMemoria :
 
@@ -34,27 +35,39 @@ class GerenciadorDeMemoria :
             if processo != None:
                 print(processo.nomeDoProcesso, " : ", processo.estado)
 
-
-    def executarInstrucao(self, entrada, quadros):
-        processo = Processo()
-        processo.nome = entrada[0]
+    def removerProcessoDaCpu(self):
 
         for i in self.tabelaDeProcessos:
-            if i.nome == processo.nome:
-                processo = i
+            if i.estado == "executando":
+                i.estado = "pronto"
+                break
 
+
+
+    def executarInstrucao(self, entrada, quadros):
+        processoAtual = None
+        
+        for processo in self.tabelaDeProcessos:
+            if processo.nomeDoProcesso == entrada[0]:
+                processoAtual = processo
+
+        self.removerProcessoDaCpu()
+        
         colocarProcessoNaMemoriaPrincipal(quadros, processo)
         processo.estado = "executando"
 
+        bitsOffset = math.log(self.tamanhoDoQuadro, 2)
+        bitsEndLog = len(entrada[2])
+        bitsPagina = bitsEndLog - bitsOffset
+
         endereco_logico = entrada[2]
-        
-        numeroDaPagina = endereco_logico[:7]
-        offset = endereco_logico[7:]
+
+        numeroDaPagina = endereco_logico[:bitsPagina]
+        offset = endereco_logico[bitsPagina:bitsOffset]
 
         numeroDoQuadro = processo.pagina.entrada.numeroDoQuadro
 
-        enderecoFisico = str(numeroDoQuadro) + str(offset)
-        enderecoFisico = int(enderecoFisico)
+        # enderecoFisico = str(numeroDoQuadro) + str(offset)
 
     def removerProcessoDaTabela(self, processo):
         for i in range(len(self.tabelaDeProcessos) - 1):
@@ -71,11 +84,23 @@ class GerenciadorDeMemoria :
                 self.memoriaSecundaria.processosSuspensos.remove(p)
 
         self.removerProcessoDaTabela(nomeDoProcesso)
-                
 
-    def realizarLeitura(processo, endereco):
-        numero_pagina = endereco[:5]
-        offset = endereco[7:]
+
+    def realizarLeitura(self, nomeProcesso, endereco):
+
+        bitsOffset = math.log(self.tamanhoDoQuadro, 2)
+        bitsEndLog = len(entrada[1])
+        bitsPagina = bitsEndLog - bitsOffset
+        
+        processo = None
+
+        for i in self.tabelaDeProcessos:
+            if i.nomeDoProcesso == nomeProcesso:
+                processo = i
+                
+        if processo is None: 
+            return        
+        
 
         if numero_pagina < processo.quantidadeDePaginas:
             pagina = processo.tabelaDePaginas[numero_pagina]
@@ -87,7 +112,7 @@ class GerenciadorDeMemoria :
         else:
             print(f"Falha na leitura: Endereço {endereco} fora do espaço de endereçamento do processo.")
 
-    def realizarEscrita(processo, endereco, dados):
+    def realizarEscrita(self, processo, endereco, dados):
         numero_pagina = endereco[:5]
         offset = endereco[7:]
 
@@ -101,6 +126,6 @@ class GerenciadorDeMemoria :
                 print(f"Falha na escrita: Página não está na memória principal.")
         else:
             print(f"Falha na escrita: Endereço {endereco} fora do espaço de endereçamento do processo.")
-        
 
-    
+    # def executarInstrucao(entrada):
+    #     if()

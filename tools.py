@@ -11,16 +11,20 @@ def removeN(variavel):
             variavel.pop(letra)
 
 def atualizarLRU(gerenciador):
-    for processo in gerenciador.tabelaDeProcessos:
-        processo.contadorLRU += 1
+    for quadro in gerenciador.memoriaPrincipal.quadros:
+        if quadro.pagina:
+            quadro.pagina.contadorLRU += 1
 
-def removerProcessoDaMemoriaPrincipalLRU(gerenciador):
-    p1 = gerenciador.tabelaDeProcessos[0]
-    for processo in gerenciador.tabelaDeProcessos:
-        if processo.contadorLRU > p1.contadorLRU:
-            p1 = processo
+def removerPaginaDaMemoriaPrincipalLRU(gerenciador):
 
-    gerenciador.swapper.removerProcessoDaMemoriaPrincipal(p1)
+    paginaARemover = None
+    for pagina in gerenciador.memoriaPrincipal.quadros:
+        if pagina:
+            if paginaARemover.pagina == None:
+                paginaARemover = pagina
+            if pagina.contadorLRU > paginaARemover.contadorLRU:
+                paginaARemover = pagina     
+    paginaARemover.liberarQuadro()
 
 def instrucaoDeIO(entrada):
     # Parse the input
@@ -28,6 +32,8 @@ def instrucaoDeIO(entrada):
     processoID = int(entrada[2])
     dispositivoID = int(entrada[3])
     tempo = int(entrada[4])
+
+
 
 def lerEntrada(entrada, manager):
     atualizarLRU(manager)
@@ -39,11 +45,10 @@ def lerEntrada(entrada, manager):
         case "C":
             manager.criarProcesso(entrada)
         case "I":  
-            instrucaoDeIO(entrada)
+            manager.instrucaoDeIO(entrada)
         case "P":
-            executarInstrucao(entrada)
-        case "W":  
-            print(entrada)
+            manager.executarInstrucao(entrada)
+        case "W":
             manager.realizarEscrita(entrada[0], entrada[2], entrada[3])
         case "R":
             manager.realizarLeitura(entrada[0], entrada[2])
@@ -56,11 +61,8 @@ def lerEntrada(entrada, manager):
             return
     atualizarLRU(manager)
 
-
-
 def processoCabeNaMemoriaPrincipal(memoriaPrincipal, processo):
     quadrosLivres = 0
-
     for quadro in memoriaPrincipal.quadros:
         if quadro.pagina == None:
             quadrosLivres += 1
@@ -87,4 +89,3 @@ def lerArquivo(path, manager):
     arquivo = open(path, 'r')
     for linha in arquivo :
         lerEntrada(linha, manager)
-

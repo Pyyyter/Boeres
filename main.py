@@ -22,9 +22,10 @@ def seleciona():
 def inicio(manager):
     resposta = seleciona()
     if(resposta == 1):
+      print("-------------------Memória Principal -----------------------")
       manager.memoriaPrincipal.mostrarMemoriaPrincipal()
-      print("------------------------------------------")
-      manager.memoriaPrincipal.mostrarMemoriaSecundaria()
+      print("-------------------Memória Secundaria -----------------------")
+      manager.memoriaSecundaria.mostrarMemoriaSecundaria()
     if(resposta == 2):
        manager.memoriaPrincipal.mostrarTabelasDePaginas()
     if(resposta == 3):
@@ -40,9 +41,11 @@ def inicio(manager):
     
 
 def teste():
-    manager = GerenciadorDeMemoria(1024, 4096, 16, 12)
+    manager = GerenciadorDeMemoria(1024, 1024, 16, 12)
     inicio(manager)
-    # manager.criarProcesso("P1 1 160")
-    manager.memoriaPrincipal.mostrarMemoriaPrincipal()
+    manager.criarProcesso("P1 1 160")
+    #manager.memoriaPrincipal.mostrarMemoriaPrincipal()
+
+
 
 teste()

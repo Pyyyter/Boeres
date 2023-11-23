@@ -1,5 +1,5 @@
 from tools import processoCabeNaMemoriaPrincipal
-from tools import removerProcessoDaMemoriaPrincipalLRU
+from tools import removerPaginaDaMemoriaPrincipalLRU
 from tools import colocarProcessoNaMemoriaPrincipal
 from random import randint
 
@@ -12,7 +12,7 @@ class Swapper :
         if cabe:
             colocarProcessoNaMemoriaPrincipal(self.manager.memoriaPrincipal, processo)
         while not cabe:
-            removerProcessoDaMemoriaPrincipalLRU(self.manager)
+            removerPaginaDaMemoriaPrincipalLRU(self.manager)
             cabe = processoCabeNaMemoriaPrincipal(self.manager.memoriaPrincipal, processo)
         processo.estado = "Pronto"
         colocarProcessoNaMemoriaPrincipal(self.manager, processo)
@@ -36,4 +36,3 @@ class Swapper :
                 if quadro.pagina.processoAssociado.nomeDoProcesso == processo.nomeDoProcesso:
                     print("liberou")
                     quadro.liberarQuadro()
-1
